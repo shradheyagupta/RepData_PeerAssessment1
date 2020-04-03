@@ -43,7 +43,7 @@ cbind(mean,median)
 
 ## What is the average daily activity pattern?
 ```{r, echo=TRUE}
-# Make a time series plot (i.e. type = "l"\color{red}{\verb|type = "l"|}type="l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
+# Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
 
 five_avg <- group_by(data, interval) %>%
           summarise(steps = mean(steps, na.rm = TRUE))
@@ -65,9 +65,52 @@ nrow(na)
 
 # Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
+place_mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
+
+# Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+replace_na <- group_by(data, interval)%>%
+          mutate(steps= place_mean(steps))
+head(replace_na)
+
+#Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
+
+replace_grp <- group_by(replace_na,date)%>%
+          summarise(steps = sum(steps))
+
+hist(replace_grp$steps, xlab = "Total daily Steps",main="Histogram after data imputation", breaks = 40)
+
+mean_imput <- mean(replace_grp$steps)
+median_imput <- median(replace_grp$steps)
+cbind(mean,median)
+
+#Do these values differ from the estimates from the first part of the assignment? 
+# Relative frequencies remains same, but the absolute frequencies changed.
+
+#What is the impact of imputing missing data on the estimates of the total daily number of steps?
+# Same result as imputed with the mean value.
 
 ```
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+
+# Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
