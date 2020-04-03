@@ -6,19 +6,67 @@ output:
 ---
 
 
-## Loading and preprocessing the data
+## Library loading
+```{r,echo=TRUE}
+library(dplyr)
+library(ggplot2)
+```
 
+
+## Loading and preprocessing the data
+```{r,echo=TRUE}
+#Load,process and transform the data.
+
+data <- read.csv("activity.csv")%>%
+          tbl_df()
+```
 
 
 ## What is mean total number of steps taken per day?
+```{r,echo=TRUE}
+#Calculate the total number of steps taken per day.
 
+grp_data <- group_by(data,date)%>%
+          summarise(steps = sum(steps))
+
+#Make a histogram of the total number of steps taken each day.
+
+hist(grp_data$steps, xlab = "Total daily Steps",main="Histogram of mean total number of steps taken per day", breaks = 40)
+
+# Calculate and report the mean and median of the total number of steps taken per day.
+
+mean <- mean(grp_data$steps, na.rm = TRUE)
+median <- median(grp_data$steps, na.rm = TRUE)
+cbind(mean,median)
+```
 
 
 ## What is the average daily activity pattern?
+```{r, echo=TRUE}
+# Make a time series plot (i.e. type = "l"\color{red}{\verb|type = "l"|}type="l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
 
+five_avg <- group_by(data, interval) %>%
+          summarise(steps = mean(steps, na.rm = TRUE))
+ggplot(five_avg, aes(interval, steps)) + geom_line()
+
+#Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+five_avg[five_avg$steps==max(five_avg$steps),]
+
+```
 
 
 ## Imputing missing values
+```{r}
+# Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NA).
+
+na <- data[(is.na(data)),]
+nrow(na)
+
+# Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+
+```
 
 
 
