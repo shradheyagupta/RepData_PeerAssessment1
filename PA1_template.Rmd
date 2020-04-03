@@ -27,7 +27,7 @@ data <- read.csv("activity.csv")%>%
 #Calculate the total number of steps taken per day.
 
 grp_data <- group_by(data,date)%>%
-          summarise(steps = sum(steps))
+          summarize(steps = sum(steps))
 
 #Make a histogram of the total number of steps taken each day.
 
@@ -57,7 +57,7 @@ five_avg[five_avg$steps==max(five_avg$steps),]
 
 
 ## Imputing missing values
-```{r}
+```{r, echo=TRUE}
 # Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NA).
 
 na <- data[(is.na(data)),]
@@ -75,7 +75,7 @@ head(replace_na)
 
 #Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
 
-replace_grp <- group_by(replace_na,date)%>%
+replace_grp <- group_by(replace_na,date) %>%
           summarise(steps = sum(steps))
 
 hist(replace_grp$steps, xlab = "Total daily Steps",main="Histogram after data imputation", breaks = 40)
@@ -93,24 +93,30 @@ cbind(mean,median)
 ```
 
 
-
 ## Are there differences in activity patterns between weekdays and weekends?
-
-```{r}
+```{r, echo=TRUE}
 
 # Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
+replace_na$dayofweek <- weekdays(as.Date(replace_na$date))
+replace_na$weekend <-as.factor(replace_na$dayofweek=="Saturday"|replace_na$dayofweek=="Sunday")
+levels(replace_na$weekend) <- c("Weekday", "Weekend")
 
+# Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
+act_weekday <- replace_na[replace_na$weekend=="Weekday",]
+act_weekend <- replace_na[replace_na$weekend=="Weekend",]
 
+act.int.weekday <- group_by(act_weekday, interval)
+act.int.weekday <- summarize(act.int.weekday, steps=mean(steps))
+act.int.weekday$weekend <- "Weekday"
+act.int.weekend <- group_by(act_weekend, interval)
+act.int.weekend <- summarize(act.int.weekend, steps=mean(steps))
+act.int.weekend$weekend <- "Weekend"
 
-
-
-
-
-
-
-
+act.int <- rbind(act.int.weekday, act.int.weekend)
+act.int$weekend <- as.factor(act.int$weekend)
+ggplot(act.int, aes(interval, steps)) + geom_line() + facet_grid(weekend ~ .)
 
 ```
 
